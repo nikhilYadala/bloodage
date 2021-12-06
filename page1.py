@@ -6,113 +6,135 @@ import seaborn as sns
 import datetime
 import math
 
+data_url = 'https://raw.githubusercontent.com/ZhouyaoXie/age-vis/main/data/data_n.csv'
+disease_lst = ['Diabetes', 'Heart_Attack', 'Thyroid', 'Asthma', 'Kidney_Stones', 'Hepatitis']
+
+title = 'Age & Diseases'
+intro_text ="""
+In the previous page, we analysed how various attributes correlate with disease (Marraige with thyroid, 
+weight with diabetes, length of stay in the USA with the prevalence af asthma). While we had observed some 
+correaltions, we are more interestd in understand the causality or other confounding factors. In general, the 
+probability of getting diagnosed with a disease increses through age. 
+
+The chronological age (number of years since birth) is ccorrelated linearly with
+- Marital status : On an average, unmarried people would be of lesser age compared to the couple that is either 
+married or divorced)
+- Length of stay in US : This is an obvious correlation. The higher someone stays in a country the higher their 
+age would be
+
+This excercise is to understand how age affects the probabiltiy of getting diagnosed with various diseases, including 
+Diabetes, Heart attack, Thyroid, Asthma, Kidney problems, and Hepatitis. 
+We can see that except for Asthma, all other diseases have increased prevalance in elderly people. 
+Our understanding is that Asthma, if present, is often screened at a very early age (before 10 years), and hence we 
+see a bulge only in the lower part of the violin plot for Asthma.
+
+"""
+
+@st.cache
+def load_data():
+    data_n = pd.read_csv(data_url)
+    dd_age_thyroid = load_age_thyroid_data(data_n)
+    dd_age_diabetes = load_age_diabetes_data(data_n)
+    dd_age_heartAttack = load_age_heartattack_data(data_n)
+    dd_age_asthma = load_age_asthma_data(data_n)
+    dd_age_kidney = load_age_kidney_data(data_n)
+    dd_age_hepatitis = load_age_hepatitis_data(data_n)
+    plots = {
+        "Diabetes": dd_age_diabetes[dd_age_diabetes["DIQ010"]==1].rename(columns = {"RIDAGEYR": "Diabetes"}), 
+        "Heart_Attack" : dd_age_heartAttack[dd_age_heartAttack["MCQ160E"]==1].rename(columns = {"MCD180E": "Heart_Attack"}),
+        "Thyroid" : dd_age_thyroid[dd_age_thyroid["MCQ160M"]==1].rename(columns = {"MCD180M": "Thyroid"}),
+        "Asthma" : dd_age_asthma[dd_age_asthma["MCQ010"]==1].rename(columns = {"MCQ025": "Asthma"}),
+        "Kidney_Stones" : dd_age_kidney[dd_age_kidney["KIQ026"]==1].rename(columns = {"RIDAGEYR": "Kidney_Stones"}),
+        "Hepatitis" : dd_age_hepatitis[dd_age_hepatitis["HEQ010"]==1].rename(columns = {"RIDAGEYR": "Hepatitis"})
+        }
+    return data_n, plots
+
+def load_age_thyroid_data(data_n):
+    dd_age_thyroid = data_n[["SEQN","RIDAGEYR","MCQ160M","MCD180M"]]
+    #remove missing entries and the datapoints where the users have refused to provide the marraige information
+    dd_age_thyroid = dd_age_thyroid[~dd_age_thyroid["RIDAGEYR"].isin([])]
+    #remove missing entries the datapoitns where the users have refused to provide the thyroid information
+    dd_age_thyroid = dd_age_thyroid[~dd_age_thyroid["MCD180M"].isin([77777,99999])]
+    #remove rows with any NA
+    dd_age_thyroid = dd_age_thyroid.dropna()
+
+    return dd_age_thyroid
+
+def load_age_diabetes_data(data_n):
+    dd_age_diabetes = data_n[["SEQN","RIDAGEYR","DIQ010"]]
+    #remove missing entries and the datapoints where the users have refused to provide the marraige information
+    dd_age_diabetes = dd_age_diabetes[~dd_age_diabetes["RIDAGEYR"].isin([])]
+    #remove missing entries the datapoitns where the users have refused to provide the diabetes information
+    dd_age_diabetes = dd_age_diabetes[~dd_age_diabetes["DIQ010"].isin([7,9])]
+    #remove rows with any NA
+    dd_age_diabetes = dd_age_diabetes.dropna()
+
+    return dd_age_diabetes
+
+def load_age_heartattack_data(data_n):
+    dd_age_heartAttack = data_n[["SEQN","RIDAGEYR","MCQ160E","MCD180E"]]
+    #remove missing entries and the datapoints where the users have refused to provide the marraige information
+    dd_age_heartAttack = dd_age_heartAttack[~dd_age_heartAttack["MCQ160E"].isin([])]
+    #remove missing entries the datapoitns where the users have refused to provide the heartAttack information
+    dd_age_heartAttack = dd_age_heartAttack[~dd_age_heartAttack["MCD180E"].isin([77777,99999])]
+    #remove rows with any NA
+    dd_age_heartAttack = dd_age_heartAttack.dropna()
+
+    return dd_age_heartAttack
+
+def load_age_asthma_data(data_n):
+    dd_age_asthma = data_n[["SEQN","RIDAGEYR","MCQ010","MCQ025"]]
+    #remove missing entries and the datapoints where the users have refused to provide the marraige information
+    dd_age_asthma = dd_age_asthma[~dd_age_asthma["MCQ010"].isin([])]
+    #remove missing entries the datapoitns where the users have refused to provide the asthma information
+    dd_age_asthma = dd_age_asthma[~dd_age_asthma["MCQ025"].isin([77777,99999])]
+    #remove rows with any NA
+    dd_age_asthma = dd_age_asthma.dropna()
+
+    return dd_age_asthma
+
+def load_age_kidney_data(data_n):
+    dd_age_kidney = data_n[['SEQN','RIDAGEYR','KIQ026']]
+    dd_age_kidney = dd_age_kidney[dd_age_kidney['KIQ026'].isin([1,2])]
+    dd_age_kidney = dd_age_kidney.dropna()
+    dd_age_kidney[dd_age_kidney['KIQ026']==1]['RIDAGEYR']
+
+    return dd_age_kidney
+
+def load_age_hepatitis_data(data_n):
+    dd_age_hepatitis = data_n[['SEQN','RIDAGEYR','HEQ010']]
+    dd_age_hepatitis = dd_age_hepatitis[dd_age_hepatitis['HEQ010'].isin([1,2])]
+    dd_age_hepatitis = dd_age_hepatitis.dropna()
+    dd_age_hepatitis[dd_age_hepatitis['HEQ010']==1]['RIDAGEYR']
+
+    return dd_age_hepatitis
+
+def plot_violin(plots, disease = 'Diabetes'):
+    fig, ax = plt.subplots(1,1, figsize = (5,9))
+    sns.violinplot(data = plots[disease], y = disease, ax=ax)
+    return fig
 
 def app():
 
-    st.title()
-
-    @st.cache
-    def load_data():
-        return None
+    st.title(title)
 
     data_load_state = st.markdown('*Loading data... \
-        If this is the first time you are launching this app, this is going to take about 1 minute.*')
-    df = load_data()
+        If this is the first time you are launching this app, this is going to take a few minutes.*')
+    data_n, plots = load_data()
     data_load_state.markdown('*Loading graphics...*')
 
-    st.markdown(intro_text)
+    data_load_state.markdown(intro_text)
 
-    # col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2)
 
-    # st.sidebar.markdown("**Input Fields**")
-    # # select companies
-    # select = st.sidebar.multiselect('Select companies to display:', df.Name.unique())
-    # default_stock_lst = ['AAPL', 'MSFT', 'AMZN', 'FB', 'GOOGL', 'GOOG', 'NVDA', 'BRK.B', 'JPM']
-    # stock_lst = select if select else default_stock_lst
-    # # select start date
-    # start_date = st.sidebar.date_input("Start date:", datetime.date(2013,2,8), 
-    #                         min_value = datetime.date(2013,2,8), 
-    #                         max_value = datetime.date(2018,2,7))
-    # # select end date
-    # end_date = st.sidebar.date_input("End date:", datetime.date(2018,2,7), 
-    #                         min_value = start_date + datetime.timedelta(1), 
-    #                         max_value = datetime.date(2018,2,7))
-    # # select explore options
-    # st.sidebar.markdown('Explore:')
-    # max_variance = st.sidebar.checkbox('Show max variance company')
-    # min_variance = st.sidebar.checkbox('Show min variance company')
-    # fastest_growth = st.sidebar.checkbox('Show fastest growth company')
-    # slowest_growth = st.sidebar.checkbox('Show slowest growth company')
+    # select companies
+    select = col1.selectbox('Select a disease to explore:', disease_lst)
+    select = 'Diabetes' if not select else select
 
-    # # prepare input dataframe
-    # df_display = df.loc[(df['date'] >= start_date) & (df['date'] <= end_date)]
-    # if not max_variance and not min_variance and not fastest_growth and not slowest_growth:
-    #     df_display = df_display.loc[df_display['Name'].isin(stock_lst)]
-    #     wide_df = pd.pivot_table(df_display, columns = 'Name', values = 'close', index = 'date')
-    # else:
-    #     wide_df = pd.pivot_table(df_display, columns = 'Name', values = 'close', index = 'date')
-    #     change_column_names = {}
-    #     if max_variance:
-    #         max_variance_company = wide_df.var(axis = 0).argmax()
-    #         max_variance_company = wide_df.columns[max_variance_company]
-    #         change_column_names[max_variance_company] = max_variance_company + ' (Max Var)'
-    #         if max_variance_company not in stock_lst:
-    #             stock_lst.append(max_variance_company)
-    #     if min_variance:
-    #         min_variance_company = wide_df.var(axis = 0).argmin()
-    #         min_variance_company = wide_df.columns[min_variance_company]
-    #         change_column_names[min_variance_company] = min_variance_company + ' (Min Var)'
-    #         if min_variance_company not in stock_lst:
-    #             stock_lst.append(min_variance_company)
-    #     if fastest_growth:
-    #         fastest_growth_company = ((wide_df.iloc[-1] - wide_df.iloc[0]) / wide_df.iloc[0]).argmax()
-    #         fastest_growth_company = wide_df.columns[fastest_growth_company]
-    #         change_column_names[fastest_growth_company] = fastest_growth_company + ' (Fastest Growth)'
-    #         if fastest_growth_company not in stock_lst:
-    #             stock_lst.append(fastest_growth_company)
-    #     if slowest_growth:
-    #         slowest_growth_company = ((wide_df.iloc[-1] / wide_df.iloc[0]) / wide_df.iloc[0]).argmin()
-    #         slowest_growth_company = wide_df.columns[slowest_growth_company]
-    #         change_column_names[slowest_growth_company] = slowest_growth_company + ' (Slowest Growth)'
-    #         if slowest_growth_company not in stock_lst:
-    #             stock_lst.append(slowest_growth_company)
-    #     df_display = df_display.loc[df_display['Name'].isin(stock_lst)]
-    #     for k, v in change_column_names.items():
-    #         df_display.Name = df_display.Name.str.replace(k, v)
-    #     wide_df = wide_df[stock_lst]
-    #     wide_df.rename(columns = change_column_names, inplace = True)
+    # plot left panel
+    col1.markdown('#### Age distribution of ' + select)
+    col1.pyplot(plot_violin(plots, select))
 
-    # # creating line plot
-    # fig1 = plt.figure()
-    # sns.set_style('darkgrid')
-    # plot_ = sns.lineplot(data = df_display, x = 'date', y = 'close', hue = 'Name')
-    # plt.xlim(start_date - datetime.timedelta(1), end_date + datetime.timedelta(1))
-    # tick_number = len(plt.xticks()[0])
-    # tick_loc_multiple = tick_number // 20 + 1
-    # plt.legend(fontsize = 'x-small')
-    # plt.xticks(ticks = [plt.xticks()[0][i] for i in range(tick_number) if i % tick_loc_multiple == 0])
-    # plt.xticks(rotation=30, fontsize = 'x-small')
-    # plt.yticks(fontsize = 'x-small')
 
-    # # creating corr plot
-    # fig2 = plt.figure()
-    # sns.heatmap(wide_df.corr())
-    # plt.xticks(fontsize = 'x-small')
-    # plt.yticks(fontsize = 'x-small')
-
-    # data_load_state.title('Stock Price of S&P500 Companies')
-
-    # col1.subheader('Stock Price Changes of Selected Companies ')
-    # col1.pyplot(fig1)
     # col2.subheader('Correlation Between Stock Prices')
     # col2.pyplot(fig2)
-
-    # @st.cache
-    # def convert_df(df):
-    #     return df.to_csv()
-
-    # with st.expander("Click here to view and download your selected data:"):
-    #     col3, col4 = st.columns(2)
-    #     col3.download_button('Download wide format data', convert_df(wide_df), file_name = 'stock_price_wide.csv')
-    #     col4.download_button('Download long format data', convert_df(df_display), file_name = 'stock_price_long.csv')
-    #     st.dataframe(wide_df)
