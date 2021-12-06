@@ -9,7 +9,7 @@ from io import BytesIO
 
 title = "More Explorations"
 intro = """
-
+Some intro goes here
 """
 img_url1 = 'https://github.com/ZhouyaoXie/age-vis/blob/main/img/page2-thyroid-marriage.png?raw=true'
 img_url2 = 'https://github.com/ZhouyaoXie/age-vis/blob/main/img/page2-year-asthma.png?raw=true'
@@ -43,18 +43,21 @@ def open_image(url):
 
 def app():
 	st.title(title)
-
+	st.markdown(intro)
 	st.markdown(finding1_title)
 	img1 = open_image(img_url1)
-	st.image(img1, caption='')
-	st.markdown(finding1_text)
+	col1, col2 = st.columns(2)
+	col1.image(img1, caption='', width = 450)
+	col2.markdown(finding1_text)
 
 	st.markdown(finding2_title)
 	img2 = open_image(img_url2)
-	st.image(img2, caption='')
-	st.markdown(finding2_text)
+	col1, col2 = st.columns(2)
+	col2.image(img2, caption='')
+	col1.markdown(finding2_text)
 
 	st.markdown(finding3_title)
 	img3 = open_image(img_url3)
-	st.image(img3, caption='')
-	st.markdown(finding3_text)
+	col1, col2 = st.columns(2)
+	col1.image(img3, caption='')
+	col2.markdown(finding3_text)

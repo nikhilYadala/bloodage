@@ -26,9 +26,8 @@ page = PAGES[selection]
 
 # about info
 st.sidebar.markdown("# About")
-st.sidebar.markdown("Final Project for CMU 05839 interactive Data Science")
-st.sidebar.markdown("Authors: Nikhil Yadala, Manoj Ghuhan, Zhouyao Xie")
-st.sidebar.markdown("Instructor: John Stamper")
-
+st.sidebar.markdown("**@brief** Final Project for CMU 05839 interactive Data Science")
+st.sidebar.markdown("**@Github** [Github repo](https://github.com/ZhouyaoXie/age-vis)")
+st.sidebar.markdown("""**@Authors**: Manoj Ghuhan | Zhouyao Xie | Nikhil Yadala""")
 
 page.app()
