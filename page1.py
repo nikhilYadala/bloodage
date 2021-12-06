@@ -183,11 +183,11 @@ def app():
     data_load_state.markdown('*Loading graphics...*')
     data_load_state.markdown(intro_text)
 
-    col1, col2 = st.columns(2)
-
     # select disease
     select = st.selectbox('Select a disease to explore:', disease_lst)
     select = 'Diabetes' if not select else select
+
+    col1, col2 = st.columns(2)
 
     # plot left panel
     col1.markdown('#### Age distribution of ' + select)
