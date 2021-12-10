@@ -14,10 +14,6 @@ The x-axis shows the distribution of age, while the y-axis shows the distributio
 the selected marker. You can play with different markers and see how the visualization changes.
 """
 
-disease_analysis = {
-    'Diabetes': 'some analysis goes here'
-}
-
 marker_dict = {
     'LBXSTR':'Triglycerides',
     'LBXSCR':'Creatinine',
@@ -28,8 +24,6 @@ marker_dict = {
     'LBXSCH':'Cholesterol'
 }
 
-
-marker_dict_reverse = dict(zip(marker_dict.values(), marker_dict.keys()))
 
 @st.cache
 def load_data():

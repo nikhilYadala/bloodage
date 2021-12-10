@@ -14,6 +14,8 @@ PAGES = {
     "Predicting Biological Age": page4
 }
 
+video_url = ''
+
 st.set_page_config(layout="wide")
 # center image with style.css
 f = requests.get('https://raw.githubusercontent.com/ZhouyaoXie/age-vis/main/style.css').content
@@ -27,7 +29,8 @@ page = PAGES[selection]
 # about info
 st.sidebar.markdown("# About")
 st.sidebar.markdown("**@brief** Final Project for CMU 05839 interactive Data Science")
-st.sidebar.markdown("**@Github** [Github repo](https://github.com/ZhouyaoXie/age-vis)")
+st.sidebar.markdown("**@Github** [Our code](https://github.com/ZhouyaoXie/age-vis)")
+st.sidebar.markdown("""**@video **: [presentation](""" + video_url+')')
 st.sidebar.markdown("""**@authors**:  \nNikhil Yadala | Manoj Ghuhan | Zhouyao Xie""")
 
 page.app()
