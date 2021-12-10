@@ -3,9 +3,13 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from PIL import Image
+import requests
+from io import BytesIO
 
 title = "Motivation and Dataset"
-img_url1 = 
+img_url1 = "https://github.com/ZhouyaoXie/age-vis/blob/main/img/page0-eda.png?raw=true"
+data_url = 'https://raw.githubusercontent.com/ZhouyaoXie/age-vis/main/data/data_n.csv'
 
 intro_text = """
 Today, we know of several [hallmarks of aging] (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3836174/) : 
@@ -72,10 +76,24 @@ def open_image(url):
     img = Image.open(BytesIO(response.content))
     return img
 
+@st.cache
+def load_data():
+    """
+    Load the aggregate dataframe as well as processing dataframes for plotting.
+
+    """
+    data_n = pd.read_csv(data_url, index_col = False)
+    return data_n
+
 def app():
     st.title(title)
     st.markdown(intro_text)
     st.markdown(dataset_text)
     img1 = open_image(img_url1)
-    st.image(img1, caption='', width = 450)
+    st.image(img1, caption='', width = 800)
     st.markdown(eda_caption)
+    st.markdown('------')
+
+    with st.expander("Click here to view and download our data:"):
+        data_n = load_data()
+        st.download_button('Download our data', data_n.to_csv(), file_name = 'nhanes_data.csv')

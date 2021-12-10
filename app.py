@@ -8,8 +8,8 @@ import requests
 
 PAGES = {
     "Intro & Dataset": page0,
-    "Age & Diseases": page1,
-    "More Explorations": page2,
+    "Exploratory Data Analysis": page1,
+    "Age & Diseases": page2,
     "Biomarkers & Age": page3,
     "Predicting Biological Age": page4
 }
@@ -28,6 +28,6 @@ page = PAGES[selection]
 st.sidebar.markdown("# About")
 st.sidebar.markdown("**@brief** Final Project for CMU 05839 interactive Data Science")
 st.sidebar.markdown("**@Github** [Github repo](https://github.com/ZhouyaoXie/age-vis)")
-st.sidebar.markdown("""**@Authors**: Manoj Ghuhan | Zhouyao Xie | Nikhil Yadala""")
+st.sidebar.markdown("""**@authors**: Manoj Ghuhan | Zhouyao Xie | Nikhil Yadala""")
 
 page.app()
