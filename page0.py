@@ -7,11 +7,12 @@ from PIL import Image
 import requests
 from io import BytesIO
 
-title = "Motivation and Dataset"
+title = "Motivation"
 img_url = "https://github.com/ZhouyaoXie/age-vis/blob/main/img/page0-eda.png?raw=true"
 data_url = 'https://raw.githubusercontent.com/ZhouyaoXie/age-vis/main/data/data_n.csv'
 
 intro_text = """
+---
 Today, we know of several [hallmarks of aging] (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3836174/) : 
 Genomic instability, Telomere attrition, Epigenetic alterations, Loss of proteostasis, Deregulated Nutrient sensing, 
 Mitochondrial dysfunction, cellular senescence, stem cell exhaustion..!
@@ -39,7 +40,7 @@ diseases assocciated with age).
 dataset_text = """
 
 # Dataset Overview
-
+---
 The [National Health and Nutrition Examination Survey (NHANES)](https://www.cdc.gov/nchs/nhanes/about_nhanes.htm) is
  a program of studies designed to assess the health and nutritional status of adults and children in the United States. 
  Data are collected every year using a combination of interviews and physical exams. The NHANES interview includes 
