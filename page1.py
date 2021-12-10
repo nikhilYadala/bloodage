@@ -43,7 +43,7 @@ def open_image(url):
 
 def app():
     st.title(title)
-    st.markdown(intro)
+    # st.markdown(intro)
     st.markdown(finding1_title)
     img1 = open_image(img_url1)
     st.image(img1, caption='', width = 600)

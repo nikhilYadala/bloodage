@@ -94,6 +94,6 @@ def app():
     st.markdown(eda_caption)
     st.markdown('------')
 
-    with st.expander("Click here to view and download our data:"):
+    with st.expander("Click here to download our aggregate data:"):
         data_n = load_data()
         st.download_button('Download our data', data_n.to_csv(), file_name = 'nhanes_data.csv')

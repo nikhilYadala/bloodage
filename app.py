@@ -28,6 +28,6 @@ page = PAGES[selection]
 st.sidebar.markdown("# About")
 st.sidebar.markdown("**@brief** Final Project for CMU 05839 interactive Data Science")
 st.sidebar.markdown("**@Github** [Github repo](https://github.com/ZhouyaoXie/age-vis)")
-st.sidebar.markdown("""**@authors**: Manoj Ghuhan | Zhouyao Xie | Nikhil Yadala""")
+st.sidebar.markdown("""**@authors**: Nikhil Yadala | Manoj Ghuhan | Zhouyao Xie""")
 
 page.app()
