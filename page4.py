@@ -209,14 +209,7 @@ biochem_lst = ['SEQN','LBXSATSI',
  'LBXSUA',
  'LBDSUASI']
 
-def load_data():
-    """
-    Load the aggregate dataframe as well as processing dataframes for plotting.
-
-    """
-    data_n = pd.read_csv(data_url)
-    return data_n
-
+@st.cache
 def train_model(imp_feat, param):
 	# path_prefix = "../05839/NHANES/2017-2020"
 	# dd_age = pd.read_sas(os.path.join(path_prefix, "P_BIOPRO.XPT"), format = "XPORT")
@@ -234,11 +227,13 @@ def train_model(imp_feat, param):
 	dd_age = dd_age.merge(age, how= "outer")
 	dd_age= dd_age.drop(columns=["SEQN"])
 
+	imp_feat.remove("RIDAGEYR")
+	imp_feat = list(set(dd_age.columns).intersection(set(imp_feat)))
+
 	# dd_age = dd_age.dropna().fillna(dd_age.mean())
 	dd_age = dd_age.fillna(dd_age.mean())
 	x = np.array(dd_age.loc[:, imp_feat])
 	y= np.array(dd_age.loc[:,"RIDAGEYR"])
-
 
 	params = param
 	t_clock = ensemble.GradientBoostingRegressor(**params)
@@ -260,6 +255,7 @@ def train_model(imp_feat, param):
 	print("MSE loss is ", mse)
 	r2 = r2_score(y_test, t_clock.predict(x_test))
 	print("R2 score is ", r2)
+	mae = np.mean(abs(y_test - t_clock.predict(x_test)))
 	print("MAE", np.mean(abs(y_test - t_clock.predict(x_test))))
 
 	feature_importance = t_clock.feature_importances_
@@ -272,7 +268,7 @@ def train_model(imp_feat, param):
 	plt.title("Feature Importances")
 
 	print(np.array(dd_age.loc[:, imp_feat].columns)[sorted_idx])
-	return fig, mse, r2
+	return fig, mse, r2, mae
 
 def app():
 	st.title(title)
@@ -316,12 +312,13 @@ def app():
 
 	model_training_state = st.markdown("Model training... This might take a few minutes...")
 	start = time.time()
-	fig, mse, r2 = train_model(select, params)
+	fig, mse, r2, mae = train_model(select, params)
 	end = time.time()
 	model_training_state.markdown(' ')
 	col1, col2, col3, col4 = st.columns(4)
 	col1.metric(label = 'MSE', value = mse)
-	col2.metric(label = 'R-Squared', value = r2)
-	col3.metric(label = 'Training Time', value = str(int(end-start)) + 's')
+	col2.metric(label = 'MAE', value = mae)
+	col3.metric(label = 'R-Squared', value = r2)
+	col4.metric(label = 'Training Time', value = str(int(end-start)) + 's')
 	st.pyplot(fig)
 
