@@ -153,7 +153,7 @@ def app():
 			help = "The minimum number of samples required to split an internal node of a tree.")
 		
 		col2.markdown("Select features to include in training:")
-		demo_features = .multiselect("Demographics features:", 
+		demo_features = col2.multiselect("Demographics features:", 
 			options = demo_lst, default = demo_lst)
 		di_features = col2.multiselect("Diseases features:", options = disease_lst, default = disease_lst)
 		bio_features = col2.multiselect("Biochemistry features:", options = biochem_lst, default = biochem_lst)
