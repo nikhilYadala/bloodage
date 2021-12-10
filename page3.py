@@ -151,9 +151,11 @@ def load_age_hepatitis_data(data_n):
     return dd_age_hepatitis
 
 def plot_violin(plots, disease = 'Diabetes'):
-    fig, ax = plt.subplots(1,1, figsize = (5,9))
-    sns.violinplot(data = plots[disease], y = disease, ax=ax)
-    ax.set_xlabel('distribution')
+
+	df_creatinine=data_n[['RIDAGEYR','LBXSCR']]
+	len(df_creatinine)
+    sns.jointplot(x=df_creatinine["RIDAGEYR"], y=df_creatinine["LBXSCR"], kind='hex', 
+    	marginal_kws=dict(bins=30, fill=True))
     return fig
 
 def plot_dist(plots, disease = 'Diabetes'):
@@ -177,3 +179,6 @@ def app():
     st.pyplot(plot_violin(violin_plots, select))
 
     st.markdown(disease_analysis.get(select, ' '))
+
+
+

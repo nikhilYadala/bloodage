@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 title = "Motivation and Dataset"
+img_url1 = 
 
 intro_text = """
 Today, we know of several [hallmarks of aging] (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3836174/) : 
@@ -50,7 +51,31 @@ Because of the pandemic, data collection for the 2019-2020 cycle was cancelled. 
 
 """
 
+eda_caption = """
+
+The barplots above show the distributions of a subset of the categorical variables that we 
+looked at. We have a relatively balanced gender distribution in the data, 
+with the majority of people interviewed were born in the US. Also, we have more people who 
+are married than single or widowed/divorced in the dataset. Regarding race/ethnicity, 
+non-hispanic White is the largest group, followed by non-hispanic Black, Mexican American, 
+non-hispanic Asian, and others. For diseases such as thyroid problems and heart attacks, 
+ it is not surprising to see that the majority of the interviewee answered "no" to the question 
+ "have you ever been told that you have had the disease".
+
+ For a detailed description of each field, please check the documentation on
+  [NHANES website](https://wwwn.cdc.gov/nchs/nhanes/continuousnhanes/default.aspx?Cycle=2017-2020).
+
+"""
+
+def open_image(url):
+    response = requests.get(url)
+    img = Image.open(BytesIO(response.content))
+    return img
+
 def app():
     st.title(title)
     st.markdown(intro_text)
     st.markdown(dataset_text)
+    img1 = open_image(img_url1)
+    st.image(img1, caption='', width = 450)
+    st.markdown(eda_caption)
