@@ -9,7 +9,11 @@ from io import BytesIO
 
 title = "Exploratory Data Analysis"
 intro = """
-Some intro goes here
+---
+During our exploratory data analysis, we discovered several interesting relationships \
+    among several variables. In this section, we present our findings in three topics:\
+    marital status vs. thyroid, length of stay in the U.S. vs. asthma, and weight vs. diabetes.\
+
 """
 img_url1 = 'https://github.com/ZhouyaoXie/age-vis/blob/main/img/page2-thyroid-marriage.png?raw=true'
 img_url2 = 'https://github.com/ZhouyaoXie/age-vis/blob/main/img/page2-year-asthma.png?raw=true'
@@ -43,7 +47,7 @@ def open_image(url):
 
 def app():
     st.title(title)
-    # st.markdown(intro)
+    st.markdown(intro)
     st.markdown(finding1_title)
     img1 = open_image(img_url1)
     st.image(img1, caption='', width = 600)

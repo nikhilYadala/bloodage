@@ -10,6 +10,7 @@ disease_lst = ['Diabetes', 'Heart_Attack', 'Thyroid', 'Asthma', 'Kidney_Stones',
 title = 'Age & Diseases'
 
 intro_text ="""
+---
 In the previous page, we analysed how various attributes correlate with disease (Marraige with thyroid, 
 weight with diabetes, length of stay in the USA with the prevalence af asthma). While we had observed some 
 correaltions, we are more interestd in understand the causality or other confounding factors. In general, the 
@@ -29,7 +30,12 @@ see a bulge only in the lower part of the violin plot for Asthma.
 """
 
 disease_analysis = {
-    'Diabetes': 'some analysis goes here'
+'Diabetes' : '9.6% of the respondents in our data are diagnosed with Diabetes. It can be observed that most of the people with diabetes are of age greater than 40.',
+'Heart_Attack':'4.7% of the respondents in our data are diagnosed with Heart Attack. Most people have their 1st Heart attack after the age of 40 with a peak around 60 years',
+'Thyroid':'11.7% of the respondents in our data are diagnosed with Thyroid. Most of the people having Thyroid belong in the age of 20-65 uniformly ',
+'Asthma':'15.5% of the respondents in our data are diagnosed with Asthma. Most people diagonised with Asthma are of age <20',
+'Kidney_Stones':'9.5% of the respondents in our data are diagnosed with Kidney_Stones. Most people have kidney stones after the age of 30 with a peak around 60',
+'Hepatitis':'0.76% of the respondents in our data are diagnosed with Hepatitis. Most people are diagonised with Hepatitis after the age of 40 with a peak around 60 years'
 }
 
 @st.cache

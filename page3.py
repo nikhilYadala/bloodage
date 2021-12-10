@@ -19,6 +19,16 @@ disease_analysis = {
 }
 
 
+marker_dict = {
+    'LBXSTR':'Triglycerides',
+    'LBXSCR':'Creatinine',
+    'LBXSAPSI':'Alkaline Phosphatase',
+    'LBXSASSI':'Aspartate Aminotransferase',
+    'LBXSGL':'Glucose',
+    'LBXSTB':'Total Bilirubin',
+    'LBXSCH':'Cholesterol'
+}
+
 @st.cache
 def load_data():
     """
@@ -37,13 +47,12 @@ def plot_joint(data_n, biomarker = 'LBXSCR'):
 
 def app():
     st.title(title)
+    st.markdown('----')
     data_load_state = st.markdown('*Loading data... \
         If this is the first time you are launching this app, this is going to take a few seconds.*')
     data_n = load_data()
     data_load_state.markdown('*Loading graphics...*')
     data_load_state.markdown(intro_text)
-
-    st.markdown('------')
     
     # select biomarker
     select = st.selectbox('Select a biomarker to explore:', biomarker_lst)
