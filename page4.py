@@ -4,6 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import time
+from sklearn import ensemble
+from sklearn.inspection import permutation_importance
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
 
 title = "Predicting Biological Age"
 
@@ -13,126 +17,63 @@ intro_text = """
 """
 
 demo_lst = ['RIAGENDR - Gender',
-       'RIDRETH1 - Race/Hispanic origin',
-       'RIDRETH3 - Race/Hispanic origin w/ NH Asian',
-       'RIDEXMON - Six-month time period', 'DMDBORN4 - Country of birth',
-       'DMDEDUC2 - Education level - Adults 20+',
-       'DMDMARTZ - Marital status', 'RIDEXPRG - Pregnancy status at exam',
-       'SIALANG - Language of SP Interview',
-       'SIAPROXY - Proxy used in SP Interview?',
-       'SIAINTRP - Interpreter used in SP Interview?',
-       'FIALANG - Language of Family Interview',
-       'FIAPROXY - Proxy used in Family Interview?',
-       'FIAINTRP - Interpreter used in Family Interview?',
-       'MIALANG - Language of MEC Interview',
-       'MIAPROXY - Proxy used in MEC Interview?',
-       'MIAINTRP - Interpreter used in MEC Interview?',
-       'AIALANGA - Language of ACASI Interview',
-       'WTINTPRP - Full sample interview weight',
-       'WTMECPRP - Full sample MEC exam weight',
-       'SDMVPSU - Masked variance pseudo-PSU',
-       'SDMVSTRA - Masked variance pseudo-stratum',
-       'INDFMPIR - Ratio of family income to poverty']
+       'Race/Hispanic origin',
+       'Race/Hispanic origin w/ NH Asian',
+       'Six-month time period', 'DMDBORN4 - Country of birth',
+       'Education level - Adults 20+',
+       'Marital status', 'RIDEXPRG - Pregnancy status at exam',
+       'Full sample interview weight',
+       'Ratio of family income to poverty']
 
-disease_lst = ['MCQ010 - Ever been told you have asthma',
-       'MCQ025 - Age when first had asthma', 'MCQ035 - Still have asthma',
-       'MCQ040 - Had asthma attack in past year',
-       'MCQ050 - Emergency care visit for asthma/past yr',
-       'AGQ030 - Did SP have episode of hay fever/past yr',
-       'MCQ053 - Taking treatment for anemia/past 3 mos',
-       'MCQ080 - Doctor ever said you were overweight',
-       'MCQ092 - Ever receive blood transfusion',
-       'MCD093 - Year receive blood transfusion', 'MCQ145 - CHECK ITEM',
-       'MCQ149 - Menstrual periods started yet?',
-       'MCQ151 - Age in years at first menstrual period',
-       'RHD018 - Estimated age in months at menarche',
-       'MCQ160a - Doctor ever said you had arthritis',
-       'MCQ195 - Which type of arthritis was it?',
-       'MCQ160b - Ever told had congestive heart failure',
-       'MCD180b - Age when told you had heart failure',
-       'MCQ160c - Ever told you had coronary heart disease',
-       'MCD180c - Age when told had coronary heart disease',
-       'MCQ160d - Ever told you had angina/angina pectoris',
-       'MCD180d - Age when told you had angina pectoris',
-       'MCQ160e - Ever told you had heart attack',
-       'MCD180e - Age when told you had heart attack',
-       'MCQ160f - Ever told you had a stroke',
-       'MCD180F - Age when told you had a stroke',
-       'MCQ160m - Ever told you had thyroid problem',
-       'MCQ170m - Do you still have thyroid problem',
-       'MCD180M - Age when told you had thyroid problem',
-       'MCQ160p - Ever told you had COPD, emphysema, ChB',
-       'MCQ160l - Ever told you had any liver condition',
-       'MCQ170l - Do you still have a liver condition',
-       'MCD180l - Age when told you had a liver condition',
-       'MCQ500 - Ever told you had any liver condition',
-       'MCQ510a - Liver condition: Fatty liver',
-       'MCQ510b - Liver condition: Liver fibrosis',
-       'MCQ510c - Liver condition: Liver cirrhosis',
-       'MCQ510d - Liver condition: Viral hepatitis',
-       'MCQ510e - Liver condition: Autoimmune hepatitis',
-       'MCQ510f - Liver condition: Other liver disease',
-       'MCQ515 - CHECK ITEM',
-       'MCQ520 - Abdominal pain during past 12 months?',
-       'MCQ530 - Where was the most uncomfortable pain',
-       'MCQ540 - Ever seen a DR about this pain',
-       'MCQ550 - Has DR ever said you have gallstones',
-       'MCQ560 - Ever had gallbladder surgery?',
-       'MCQ570 - Age when 1st had gallbladder surgery?',
-       'MCQ220 - Ever told you had cancer or malignancy',
-       'MCQ230a - 1st cancer - what kind was it?',
-       'MCQ230b - 2nd cancer - what kind was it?',
-       'MCQ230c - 3rd cancer - what kind was it?',
-       'MCQ230d - More than 3 kinds of cancer',
-       'MCQ300b - Close relative had asthma?',
-       'MCQ300c - Close relative had diabetes?',
-       'MCQ300a - Close relative had heart attack?',
-       'MCQ366a - Doctor told you to control/lose weight',
-       'MCQ366b - Doctor told you to exercise',
-       'MCQ366c - Doctor told you to reduce salt in diet',
-       'MCQ366d - Doctor told you to reduce fat/calories',
-       'MCQ371a - Are you now controlling or losing weight',
-       'MCQ371b - Are you now increasing exercise',
-       'MCQ371c - Are you now reducing salt in diet',
-       'MCQ371d - Are you now reducing fat in diet',
-       'OSQ230 - Any metal objects inside your body?']
+disease_lst = ['Ever been told you have asthma',
+       'Still have asthma',
+       'Doctor ever said you were overweight',
+       'Ever receive blood transfusion',
+       'Estimated age in months at menarche',
+       'Doctor ever said you had arthritis',
+       'Which type of arthritis was it?',
+       'Ever told had congestive heart failure',
+       'Ever told you had coronary heart disease',
+       'Ever told you had angina/angina pectoris',
+       'Ever told you had heart attack',
+       'Ever told you had a stroke',
+       'Ever told you had thyroid problem',
+       'Ever told you had any liver condition',
+       'Liver condition: Fatty liver',
+       'Ever had gallbladder surgery?',
+       'Ever told you had cancer or malignancy',
+       'Doctor told you to control/lose weight',
+       'Are you now increasing exercise',
+       'Any metal objects inside your body?']
 
-biochem_lst = ['LBXSATSI - Alanine Aminotransferase (ALT) (IU/L)',
-       'LBDSATLC - ALT Comment Code',
-       'LBXSAL - Albumin, refrigerated serum (g/dL)',
-       'LBDSALSI - Albumin, refrigerated serum (g/L)',
-       'LBXSAPSI - Alkaline Phosphatase (ALP) (IU/L)',
-       'LBXSASSI - Aspartate Aminotransferase (AST) (IU/L)',
-       'LBXSC3SI - Bicarbonate (mmol/L)',
-       'LBXSBU - Blood Urea Nitrogen (mg/dL)',
-       'LBDSBUSI - Blood Urea Nitrogen (mmol/L)',
-       'LBXSCLSI - Chloride (mmol/L)',
-       'LBXSCK - Creatine Phosphokinase (CPK) (IU/L)',
-       'LBXSCR - Creatinine, refrigerated serum (mg/dL)',
-       'LBDSCRSI - Creatinine, refrigerated serum (umol/L)',
-       'LBXSGB - Globulin (g/dL)', 'LBDSGBSI - Globulin (g/L)',
-       'LBXSGL - Glucose, refrigerated serum (mg/dL)',
-       'LBDSGLSI - Glucose, refrigerated serum (mmol/L)',
-       'LBXSGTSI - Gamma Glutamyl Transferase (GGT) (IU/L)',
-       'LBDSGTLC - GGT Comment Code',
-       'LBXSIR - Iron, refrigerated serum (ug/dL)',
-       'LBDSIRSI - Iron, refrigerated serum (umol/L)',
-       'LBXSLDSI - Lactate Dehydrogenase (LDH) (IU/L)',
-       'LBXSOSSI - Osmolality (mmol/Kg)', 'LBXSPH - Phosphorus (mg/dL)',
-       'LBDSPHSI - Phosphorus (mmol/L)', 'LBXSKSI - Potassium (mmol/L)',
-       'LBXSNASI - Sodium (mmol/L)', 'LBXSTB - Total Bilirubin (mg/dL)',
-       'LBDSTBSI - Total Bilirubin (umol/L)',
-       'LBDSTBLC - Total Bilirubin Comment Code',
-       'LBXSCA - Total Calcium (mg/dL)',
-       'LBDSCASI - Total Calcium (mmol/L)',
-       'LBXSCH - Cholesterol, refrigerated serum (mg/dL)',
-       'LBDSCHSI - Cholesterol, refrigerated serum (mmol/L)',
-       'LBXSTP - Total Protein (g/dL)', 'LBDSTPSI - Total Protein (g/L)',
-       'LBXSTR - Triglycerides, refrig serum (mg/dL)',
-       'LBDSTRSI - Triglycerides, refrig serum (mmol/L)',
-       'LBXSUA - Uric acid (mg/dL)', 'LBDSUASI - Uric acid (umol/L)']
+biochem_lst = [ 'Alanine Aminotransferase (ALT) (IU/L)',
+				' Albumin, refrigerated serum (g/dL)',
+				' Albumin, refrigerated serum (g/L)',
+				' Alkaline Phosphatase (ALP) (IU/L)',
+				' Aspartate Aminotransferase (AST) (IU/L)',
+				' Bicarbonate (mmol/L)',
+				' Blood Urea Nitrogen (mg/dL)',
+				' Blood Urea Nitrogen (mmol/L)',
+				' Chloride (mmol/L)',
+				' Creatine Phosphokinase (CPK) (IU/L)',
+				' Creatinine, refrigerated serum (mg/dL)',
+				' Creatinine, refrigerated serum (umol/L)',
+				' Globulin (g/dL)', 'LBDSGBSI'
+				' Glucose, refrigerated serum (mg/dL)',
+				' Glucose, refrigerated serum (mmol/L)',
+				' Gamma Glutamyl Transferase (GGT) (IU/L)',
+				' Lactate Dehydrogenase (LDH) (IU/L)',
+				' Osmolality (mmol/Kg)', 
+				' Phosphorus (mmol/L)',
+				' Sodium (mmol/L)',
+				' Total Bilirubin (umol/L)',
+				' Total Bilirubin Comment Code',
+				' Cholesterol, refrigerated serum (mg/dL)',
+				' Cholesterol, refrigerated serum (mmol/L)',
+				' Total Protein (g/dL)',
+				' Triglycerides, refrig serum (mg/dL)']
 
-def train_model():
+def train_model(imp_feat, param):
 	# path_prefix = "../05839/NHANES/2017-2020"
 	# dd_age = pd.read_sas(os.path.join(path_prefix, "P_BIOPRO.XPT"), format = "XPORT")
 	# dd_age = dd_age.merge(pd.read_sas(os.path.join(path_prefix, "P_MCQ.XPT"), format = "XPORT"), how = "outer")
@@ -148,18 +89,14 @@ def train_model():
 	dd_age = dd_age.drop(columns=["RIDAGEYR", "SDDSRVYR", "RIDAGEYR", "RIDAGEMN", "DMDYRUSZ" ,"MCQ025", "MCD093", "MCQ151" ])
 	dd_age = dd_age.merge(age, how= "outer")
 	dd_age= dd_age.drop(columns=["SEQN"])
+
 	# dd_age = dd_age.dropna().fillna(dd_age.mean())
 	dd_age = dd_age.fillna(dd_age.mean())
 	x = np.array(dd_age.loc[:, imp_feat])
 	y= np.array(dd_age.loc[:,"RIDAGEYR"])
 
-	params = {
-	    "n_estimators": 4000,
-	    "max_depth": 8,
-	    "min_samples_split": 30,
-	    "learning_rate": 0.01,
-	    "loss": "ls",
-	}
+
+	params = param
 	t_clock = ensemble.GradientBoostingRegressor(**params)
 
 	x_train, x_test, y_train, y_test  = train_test_split(x,y, test_size = 0.3, random_state =3454)
@@ -191,6 +128,7 @@ def train_model():
 	plt.title("Feature Importances")
 
 	print(np.array(dd_age.loc[:, imp_feat].columns)[sorted_idx])
+	return plt
 
 def app():
 	st.title(title)
@@ -217,10 +155,18 @@ def app():
 		selected_features = demo_features + di_features + bio_features
 
 		st.form_submit_button(label = "Train Model!")
+		params = {
+	    "n_estimators": num_trees,
+	    "max_depth": depth,
+	    "min_samples_split": min_splits,
+	    "learning_rate":lr,
+	    "loss": "ls",
+		}
+
 
 	model_training_state = st.markdown("Model training... This might take a few minutes...")
 	start = time.time()
-	re = train_model()
+	re = train_model(selected_features, params)
 	end = time.time()
 	model_training_state.markdown(' ')
 	col1, col2, col3, col4 = st.columns(4)
