@@ -8,7 +8,7 @@ import requests
 from io import BytesIO
 
 title = "Motivation and Dataset"
-img_url1 = "https://github.com/ZhouyaoXie/age-vis/blob/main/img/page0-eda.png?raw=true"
+img_url = "https://github.com/ZhouyaoXie/age-vis/blob/main/img/page0-eda.png?raw=true"
 data_url = 'https://raw.githubusercontent.com/ZhouyaoXie/age-vis/main/data/data_n.csv'
 
 intro_text = """
@@ -89,7 +89,7 @@ def app():
     st.title(title)
     st.markdown(intro_text)
     st.markdown(dataset_text)
-    img1 = open_image(img_url1)
+    img1 = open_image(img_url)
     st.image(img1, caption='', width = 800)
     st.markdown(eda_caption)
     st.markdown('------')
