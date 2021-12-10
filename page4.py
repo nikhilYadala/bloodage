@@ -141,15 +141,15 @@ def app():
 
 	with st.form(key = 'hyperparameters'):
 		col2, col1 = st.columns(2)
-		col1.slider("Number of Trees:", min_value = 10, max_value = 2000, value = 1000, 
+		num_trees = col1.slider("Number of Trees:", min_value = 10, max_value = 2000, value = 1000, 
 			help = "The number of decision trees used in the model. \
 				A larger value typically decreases training error but will take longer to train and might cause overfittng.")
-		col1.slider("Depth of Trees:", min_value = 2, max_value = 10, value = 6, 
+		depth = col1.slider("Depth of Trees:", min_value = 2, max_value = 10, value = 6, 
 			help = "The maximum depth of individual decision trees.\
 			 The maximum depth limits the number of nodes in the tree.")
-		col1.select_slider("Learning rate:", options = [0.001, 0.01, 0.02, 0.05, 0.1], value = 0.01, 
+		lr = col1.select_slider("Learning rate:", options = [0.001, 0.01, 0.02, 0.05, 0.1], value = 0.01, 
 			help = "Learning rate. This shrinks the contribution of each tree by the specified amount.")
-		col1.slider("Min Splits:", min_value = 10, max_value = 50, value = 30, 
+		min_splits = col1.slider("Min Splits:", min_value = 10, max_value = 50, value = 30, 
 			help = "The minimum number of samples required to split an internal node of a tree.")
 		
 		col2.markdown("Select features to include in training:")
