@@ -12,7 +12,64 @@ intro_text = """
 """
 
 def train_model():
-	return 0
+	# path_prefix = "../05839/NHANES/2017-2020"
+	# dd_age = pd.read_sas(os.path.join(path_prefix, "P_BIOPRO.XPT"), format = "XPORT")
+	# dd_age = dd_age.merge(pd.read_sas(os.path.join(path_prefix, "P_MCQ.XPT"), format = "XPORT"), how = "outer")
+	# dd_age = dd_age.merge(pd.read_sas(os.path.join(path_prefix, "P_TRIGLY.XPT"), format = "XPORT"), how = "outer")
+	# dd_age = dd_age.merge(pd.read_sas(os.path.join(path_prefix, "P_HSCRP.XPT"), format = "XPORT"), how = "outer")
+	# dd_age = dd_age.merge(pd.read_sas(os.path.join(path_prefix, "P_HDL.XPT"), format = "XPORT"), how = "outer")
+	# dd_age = dd_age.merge(pd.read_sas(os.path.join(path_prefix, "P_CBC.XPT"), format = "XPORT"), how = "outer")
+
+	dd_age = pd.read_csv("./data/data_n.csv")
+	# dd_age = data_n.copy()
+	# dd_age= dd_age.drop(columns=["SEQN"])
+	age = data_n[["SEQN","RIDAGEYR"]]
+	dd_age = dd_age.drop(columns=["RIDAGEYR", "SDDSRVYR", "RIDAGEYR", "RIDAGEMN", "DMDYRUSZ" ,"MCQ025", "MCD093", "MCQ151" ])
+	dd_age = dd_age.merge(age, how= "outer")
+	dd_age= dd_age.drop(columns=["SEQN"])
+	# dd_age = dd_age.dropna().fillna(dd_age.mean())
+	dd_age = dd_age.fillna(dd_age.mean())
+	x = np.array(dd_age.loc[:, imp_feat])
+	y= np.array(dd_age.loc[:,"RIDAGEYR"])
+
+	params = {
+	    "n_estimators": 4000,
+	    "max_depth": 8,
+	    "min_samples_split": 30,
+	    "learning_rate": 0.01,
+	    "loss": "ls",
+	}
+	t_clock = ensemble.GradientBoostingRegressor(**params)
+
+	x_train, x_test, y_train, y_test  = train_test_split(x,y, test_size = 0.3, random_state =3454)
+
+	t_clock.fit(x_train,y_train)
+
+	print("Training accuracy")
+	mse = mean_squared_error(y_train, t_clock.predict(x_train))
+	print("MSE loss is ", mse)
+	r2 = r2_score(y_train, t_clock.predict(x_train))
+	print("R2 score is ", r2)
+	print("MAE", np.mean(abs(y_train - t_clock.predict(x_train))))
+
+
+	print("Testing accuracy")
+	mse = mean_squared_error(y_test, t_clock.predict(x_test))
+	print("MSE loss is ", mse)
+	r2 = r2_score(y_test, t_clock.predict(x_test))
+	print("R2 score is ", r2)
+	print("MAE", np.mean(abs(y_test - t_clock.predict(x_test))))
+
+	feature_importance = t_clock.feature_importances_
+	sorted_idx = np.argsort(feature_importance)
+	pos = np.arange(sorted_idx.shape[0]) + 2
+	fig = plt.figure(figsize=(10, 10))
+	plt.subplot(1, 2, 1)
+	plt.barh(pos, feature_importance[sorted_idx], align="center")
+	plt.yticks(pos, np.array(dd_age.loc[:, imp_feat].columns)[sorted_idx])
+	plt.title("Feature Importances")
+
+	print(np.array(dd_age.loc[:, imp_feat].columns)[sorted_idx])
 
 def app():
 	st.title(title)
