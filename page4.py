@@ -78,29 +78,29 @@ demographics_lst = ['SEQN',
  'RIDSTATR',
  'RIAGENDR',
  'RIDAGEYR',
- 'RIDAGEMN',
+ # 'RIDAGEMN',
  'RIDRETH1',
  'RIDRETH3',
  'RIDEXMON',
  'DMDBORN4',
- 'DMDYRUSZ',
+ # 'DMDYRUSZ',
  'DMDEDUC2',
  'DMDMARTZ',
  'RIDEXPRG',
- 'SIALANG',
- 'SIAPROXY',
- 'SIAINTRP',
- 'FIALANG',
- 'FIAPROXY',
- 'FIAINTRP',
- 'MIALANG',
- 'MIAPROXY',
- 'MIAINTRP',
- 'AIALANGA',
- 'WTINTPRP',
- 'WTMECPRP',
- 'SDMVPSU',
- 'SDMVSTRA',
+ # 'SIALANG',
+ # 'SIAPROXY',
+ # 'SIAINTRP',
+ # 'FIALANG',
+ # 'FIAPROXY',
+ # 'FIAINTRP',
+ # 'MIALANG',
+ # 'MIAPROXY',
+ # 'MIAINTRP',
+ # 'AIALANGA',
+ # 'WTINTPRP',
+ # 'WTMECPRP',
+ # 'SDMVPSU',
+ # 'SDMVSTRA',
  'INDFMPIR']
 
 disease_lst = ['SEQN','MCQ010',
@@ -209,7 +209,14 @@ biochem_lst = ['SEQN','LBXSATSI',
  'LBXSUA',
  'LBDSUASI']
 
+data_url = 'https://raw.githubusercontent.com/ZhouyaoXie/age-vis/main/data/data_n.csv'
+
 @st.cache
+def load_data(data_url):
+	dd_age = pd.read_csv(data_url)
+	return dd_age
+
+
 def train_model(imp_feat, param):
 	# path_prefix = "../05839/NHANES/2017-2020"
 	# dd_age = pd.read_sas(os.path.join(path_prefix, "P_BIOPRO.XPT"), format = "XPORT")
@@ -219,9 +226,13 @@ def train_model(imp_feat, param):
 	# dd_age = dd_age.merge(pd.read_sas(os.path.join(path_prefix, "P_HDL.XPT"), format = "XPORT"), how = "outer")
 	# dd_age = dd_age.merge(pd.read_sas(os.path.join(path_prefix, "P_CBC.XPT"), format = "XPORT"), how = "outer")
 
-	dd_age = pd.read_csv("./data/data_n.csv")
 	# dd_age = data_n.copy()
 	# dd_age= dd_age.drop(columns=["SEQN"])
+	print('start loading')
+	t1 = time.time()
+	dd_age = load_data(data_url)
+	t2 = time.time()
+	print(t2 - t1)
 	age = dd_age[["SEQN","RIDAGEYR"]]
 	dd_age = dd_age.drop(columns=["RIDAGEYR", "SDDSRVYR", "RIDAGEYR", "RIDAGEMN", "DMDYRUSZ" ,"MCQ025", "MCD093", "MCQ151" ])
 	dd_age = dd_age.merge(age, how= "outer")
@@ -235,12 +246,17 @@ def train_model(imp_feat, param):
 	x = np.array(dd_age.loc[:, imp_feat])
 	y= np.array(dd_age.loc[:,"RIDAGEYR"])
 
+	t3 = time.time()
+	print(t3 - t2)
 	params = param
 	t_clock = ensemble.GradientBoostingRegressor(**params)
 
 	x_train, x_test, y_train, y_test  = train_test_split(x,y, test_size = 0.3, random_state =3454)
 
 	t_clock.fit(x_train,y_train)
+
+	t4 = time.time()
+	print(t4 - t3)
 
 	print("Training accuracy")
 	mse = mean_squared_error(y_train, t_clock.predict(x_train))
@@ -257,6 +273,9 @@ def train_model(imp_feat, param):
 	print("R2 score is ", r2)
 	mae = np.mean(abs(y_test - t_clock.predict(x_test)))
 	print("MAE", np.mean(abs(y_test - t_clock.predict(x_test))))
+
+	t5 = time.time()
+	print(t5 - t4)
 
 	feature_importance = t_clock.feature_importances_
 	sorted_idx = np.argsort(feature_importance)
@@ -309,6 +328,13 @@ def app():
 	    "learning_rate":lr,
 	    "loss": "ls",
 		}
+	# params = {
+	#     "n_estimators": 1,
+	#     "max_depth": 1,
+	#     "min_samples_split": min_splits,
+	#     "learning_rate":lr,
+	#     "loss": "ls",
+	# 	}
 
 	model_training_state = st.markdown("Model training... This might take a few minutes...")
 	start = time.time()
@@ -316,9 +342,9 @@ def app():
 	end = time.time()
 	model_training_state.markdown(' ')
 	col1, col2, col3, col4 = st.columns(4)
-	col1.metric(label = 'MSE', value = mse)
-	col2.metric(label = 'MAE', value = mae)
-	col3.metric(label = 'R-Squared', value = r2)
+	col1.metric(label = 'MSE', value = np.round(mse, 2))
+	col2.metric(label = 'MAE', value = np.round(mae, 2))
+	col3.metric(label = 'R-Squared', value = np.round(r2, 2))
 	col4.metric(label = 'Training Time', value = str(int(end-start)) + 's')
 	st.pyplot(fig)
 
