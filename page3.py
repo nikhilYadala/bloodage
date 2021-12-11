@@ -91,7 +91,5 @@ def app():
     st.markdown('#### Correlation Between Age and ' + select)
     plot_joint(marker_plots, biomarker = select)
 
-    st.markdown(disease_analysis.get(select, ' '))
-
 
 
