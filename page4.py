@@ -320,31 +320,26 @@ def app():
 		# bio_features = col2.multiselect("Biochemistry features:", options = biochem_lst, default = biochem_lst)
 		# selected_features = demo_features + di_features + bio_features
 
-		st.form_submit_button(label = "Train Model!")
-		params = {
-	    "n_estimators": num_trees,
-	    "max_depth": depth,
-	    "min_samples_split": min_splits,
-	    "learning_rate":lr,
-	    "loss": "ls",
-		}
-	# params = {
-	#     "n_estimators": 1,
-	#     "max_depth": 1,
-	#     "min_samples_split": min_splits,
-	#     "learning_rate":lr,
-	#     "loss": "ls",
-	# 	}
+		submitted = st.form_submit_button(label = "Train Model!")
+		if submitted:
+			params = {
+		    "n_estimators": num_trees,
+		    "max_depth": depth,
+		    "min_samples_split": min_splits,
+		    "learning_rate":lr,
+		    "loss": "ls",
+			}
 
-	model_training_state = st.markdown("Model training... This might take a few minutes...")
-	start = time.time()
-	fig, mse, r2, mae = train_model(select, params)
-	end = time.time()
-	model_training_state.markdown(' ')
-	col1, col2, col3, col4 = st.columns(4)
-	col1.metric(label = 'MSE', value = np.round(mse, 2))
-	col2.metric(label = 'MAE', value = np.round(mae, 2))
-	col3.metric(label = 'R-Squared', value = np.round(r2, 2))
-	col4.metric(label = 'Training Time', value = str(int(end-start)) + 's')
-	st.pyplot(fig)
+			model_training_state = st.markdown("Model training... This might take a few minutes...")
+			start = time.time()
+			fig = Figure()
+			fig, mse, r2, mae = train_model(select, params)
+			end = time.time()
+			model_training_state.markdown(' ')
+			col1, col2, col3, col4 = st.columns(4)
+			col1.metric(label = 'MSE', value = np.round(mse, 2))
+			col2.metric(label = 'MAE', value = np.round(mae, 2))
+			col3.metric(label = 'R-Squared', value = np.round(r2, 2))
+			col4.metric(label = 'Training Time', value = str(int(end-start)) + 's')
+			st.pyplot(fig)
 
