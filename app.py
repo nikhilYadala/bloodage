@@ -14,7 +14,7 @@ PAGES = {
     "Predicting Biological Age": page4
 }
 
-video_url = ''
+video_url = 'https://youtu.be/WS8Ss8nRJik'
 
 st.set_page_config(layout="wide")
 # center image with style.css

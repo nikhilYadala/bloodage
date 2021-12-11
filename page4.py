@@ -521,7 +521,8 @@ def train_model(imp_feat, param):
     dd_age = dd_age.merge(age, how= "outer")
     dd_age= dd_age.drop(columns=["SEQN"])
 
-    imp_feat.remove("RIDAGEYR")
+    if "RIDAGEYR" in imp_feat:
+    	imp_feat.remove("RIDAGEYR")
     imp_feat = list(set(dd_age.columns).intersection(set(imp_feat)))
 
     # dd_age = dd_age.dropna().fillna(dd_age.mean())
