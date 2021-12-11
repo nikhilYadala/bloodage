@@ -72,8 +72,11 @@ def load_data():
 
 def plot_joint(marker_plots, biomarker):
     df = marker_plots[biomarker]
-    fig = sns.jointplot(x=df['Age'], y=df[biomarker], kind='hex', marginal_kws=dict(bins=30, fill=True))
-    st.pyplot(fig)
+    try:
+        fig = sns.jointplot(x=df['Age'], y=df[biomarker], kind='hex', marginal_kws=dict(bins=30, fill=True))
+        st.pyplot(fig)
+    except:
+        pass
 
 def app():
     st.title(title)
