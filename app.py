@@ -18,8 +18,8 @@ video_url = ''
 
 st.set_page_config(layout="wide")
 # center image with style.css
-f = requests.get('https://raw.githubusercontent.com/ZhouyaoXie/age-vis/main/style.css').content
-st.markdown('<style>{}</style>'.format(f), unsafe_allow_html=True)
+# f = requests.get('https://raw.githubusercontent.com/ZhouyaoXie/age-vis/main/style.css').content
+# st.markdown('<style>{}</style>'.format(f), unsafe_allow_html=True)
 
 # page selection
 st.sidebar.markdown('# Navigation')
