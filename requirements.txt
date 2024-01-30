@@ -1,6 +1,7 @@
 streamlit==1.0.0
 pandas==1.2.1
-numpy==1.19.5
+numpy==1.22.0
+click==7.1.2
 seaborn==0.11.2
 matplotlib==3.3.3
 requests==2.25.1
